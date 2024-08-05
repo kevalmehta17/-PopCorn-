@@ -51,22 +51,23 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
+  const [movies, setMovies] = useState(tempMovieData);
   return (
     <>
-      <NavBar />
-      <Main />
+      <NavBar>
+        <Logo />
+        <Search />
+        <Numresults movies={movies} />{" "}
+      </NavBar>
+      <Main movies={movies} />
     </>
   );
 }
 
-function NavBar() {
-  return (
-    <nav className="nav-bar">
-      <Logo />
-      <Search />
-      <Numresults />
-    </nav>
-  );
+function NavBar({ children }) {
+  //solved with the Help of the Prop Drilling and here in Prop Drilling the Component is passed directly inside
+  //the tag so we dont need to write the other Component tag inside the NavBar Fun. component
+  return <nav className="nav-bar">{children}</nav>;
 }
 
 function Logo() {
@@ -78,10 +79,10 @@ function Logo() {
   );
 }
 
-function Numresults() {
+function Numresults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>X</strong> results
+      Found <strong> {movies.length} </strong> results
     </p>
   );
 }
@@ -99,16 +100,17 @@ function Search() {
   );
 }
 
-function Main() {
+function Main({ movies }) {
   return (
     <main className="main">
-      <ListBox />
+      <ListBox movies={movies} />
       <WatchedBox />
     </main>
   );
 }
 
-function ListBox() {
+function ListBox({ movies }) {
+  //Listbox Take cares of the Showing the Movie List  On UI with the Help of the isOpen
   const [isOpen1, setIsOpen1] = useState(true);
 
   return (
@@ -119,14 +121,12 @@ function ListBox() {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen1 && <MovieList />}
+      {isOpen1 && <MovieList movies={movies} />}
     </div>
   );
 }
 
-function MovieList() {
-  const [movies, setMovies] = useState(tempMovieData);
-
+function MovieList({ movies }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
