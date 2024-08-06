@@ -61,6 +61,16 @@ export default function App() {
         <Numresults movies={movies} />{" "}
       </NavBar>
       <Main>
+        {/* <Box element={<MovieList movies={movies} />} />
+        <Box
+          element={
+            <>
+              <WatchedSummary watched={watched} />{" "}
+              <WatchedList watched={watched} />{" "}
+            </>
+          }
+        /> */}
+
         <Box>
           <MovieList movies={movies} />
         </Box>
@@ -115,6 +125,7 @@ function Main({ children }) {
 }
 
 function Box({ children }) {
+  //Use as REUSABLE COMPONENT
   //Box Take cares of the Showing the Movie List  On UI with the Help of the isOpen
   const [isOpen, setIsOpen] = useState(true);
 
