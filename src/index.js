@@ -10,6 +10,6 @@ root.render(
     {/* <App /> */}
     {/* <StarRating maxRating={5} /> */}
     {/* <StarRating maxRating={10} /> */}
-    <StarRating />
+    <StarRating message={["Terrible", "Bad", "Okay", "Good", "Amazing"]} />
   </React.StrictMode>
 );
