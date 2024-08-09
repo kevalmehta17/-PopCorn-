@@ -5,10 +5,11 @@ import ReactDOM from "react-dom/client";
 import StarRating from "./StarRating";
 
 function Test() {
+  //For testing Ui right now
   const [movieRating, setMovieRating] = useState(0);
   return (
     <div>
-      <StarRating color="blue" maxRating={10} OnSetRating={setMovieRating} />
+      <StarRating color="blue" OnSetRating={setMovieRating} />
       <p>This movie is rated {movieRating} stars </p>
     </div>
   );
