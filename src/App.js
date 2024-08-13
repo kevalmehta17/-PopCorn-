@@ -56,15 +56,18 @@ const query = "Iron Man";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setISLoading] = useState(false);
 
   useEffect(function () {
     async function fetchMovies() {
+      setISLoading(true);
       const res = await fetch(
         `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
       );
       const data = await res.json();
       setMovies(data.Search);
       console.log(data.Search);
+      setISLoading(false);
     }
     fetchMovies();
   }, []);
@@ -87,9 +90,7 @@ export default function App() {
           }
         /> */}
 
-        <Box>
-          <MovieList movies={movies} />
-        </Box>
+        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
         <Box>
           <WatchedSummary watched={watched} />
           <WatchedList watched={watched} />
@@ -98,6 +99,10 @@ export default function App() {
       </Main>
     </>
   );
+}
+
+function Loader() {
+  return <p className="loader">loading.....</p>;
 }
 
 function NavBar({ children }) {
