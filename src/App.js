@@ -70,11 +70,12 @@ export default function App() {
         //   throw new Error("Something went wrong to fetch the Movie Data");
         const data = await res.json();
         setMovies(data.Search);
-        console.log(data.Search);
         setISLoading(false);
       } catch (err) {
         console.log(err.message);
         setError(err.message);
+      } finally {
+        setISLoading(false);
       }
     }
     fetchMovies();
