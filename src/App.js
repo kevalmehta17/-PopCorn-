@@ -51,7 +51,7 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const KEY = "62418533";
-const query = "Iron Man";
+const query = "bsndmn";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
@@ -66,15 +66,18 @@ export default function App() {
         const res = await fetch(
           `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
         );
-        // if (!res.ok)
-        //   throw new Error("Something went wrong to fetch the Movie Data");
+        if (!res.ok)
+          throw new Error("Something went wrong to fetch the Movie Data");
         const data = await res.json();
+        if (data.Response === "False") throw new Error("Movie not Found");
         setMovies(data.Search);
-        setISLoading(false);
-      } catch (err) {
-        console.log(err.message);
-        setError(err.message);
+        console.log(data);
+        // setISLoading(false);
+      } catch (error) {
+        setError(error.message); // Set error message to state
+        console.error("Error fetching movies:", error); // Print error to console
       } finally {
+        //this help to remove rendering Loading, if the Error is available
         setISLoading(false);
       }
     }
