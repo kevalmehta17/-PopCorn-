@@ -1,3 +1,4 @@
+import { Query } from "mongoose";
 import { useEffect, useState } from "react";
 
 // const tempMovieData = [
@@ -51,44 +52,52 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const KEY = "62418533";
-const query = "bsndmn";
+// const tempQuery = "Interstellar";
 
 export default function App() {
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setISLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(function () {
-    async function fetchMovies() {
-      try {
-        setISLoading(true);
-        const res = await fetch(
-          `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
-        );
-        if (!res.ok)
-          throw new Error("Something went wrong to fetch the Movie Data");
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not Found");
-        setMovies(data.Search);
-        console.log(data);
-        // setISLoading(false);
-      } catch (error) {
-        setError(error.message); // Set error message to state
-        console.error("Error fetching movies:", error); // Print error to console
-      } finally {
-        //this help to remove rendering Loading, if the Error is available
-        setISLoading(false);
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setISLoading(true);
+          setError("");
+          const res = await fetch(
+            `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
+          );
+          if (!res.ok)
+            throw new Error("Something went wrong to fetch the Movie Data");
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not Found");
+          setMovies(data.Search);
+        } catch (error) {
+          setError(error.message); // Set error message to state
+          console.error("Error fetching movies:", error); // Print error to console
+        } finally {
+          //this help to remove rendering Loading, if the Error is available
+          setISLoading(false);
+        }
       }
-    }
-    fetchMovies();
-  }, []);
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+      fetchMovies();
+    },
+    [query]
+  );
 
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <Numresults movies={movies} />{" "}
       </NavBar>
       <Main>
@@ -147,13 +156,12 @@ function Logo() {
 function Numresults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong> {movies.length} </strong> results
+      Found <strong>{movies ? movies.length : 0} </strong> results
     </p>
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
