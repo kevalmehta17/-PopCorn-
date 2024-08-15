@@ -48,8 +48,14 @@ import StarRating from "./StarRating";
 //   },
 // ];
 
-const average = (arr) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+const average = (arr) => {
+  const filteredArr = arr.filter(
+    (num) => typeof num === "number" && !isNaN(num)
+  ); // Filter out non-number values
+  return filteredArr.length > 0
+    ? filteredArr.reduce((acc, cur) => acc + cur, 0) / filteredArr.length
+    : 0;
+};
 
 const KEY = "62418533";
 // const tempQuery = "Interstellar";
@@ -272,13 +278,14 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
-      title,
-      year,
-      poster,
-      imdbRating: Number(imdbRating),
-      runtime,
-      userRating,
+      title: title || "N/A", // Default to 'N/A' or some other value if undefined
+      year: year || "N/A",
+      poster: poster || "N/A",
+      imdbRating: Number(imdbRating) || 0, // Default to 0
+      runtime: runtime || 0, // Default to 0
+      userRating: userRating || 0, // Default to 0
     };
+
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
@@ -317,6 +324,15 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Awards: awards,
     imdbRating,
   } = movie;
+
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+    },
+    [title]
+  );
+
   return (
     <div className="details">
       {isLoading ? (
@@ -376,9 +392,14 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 }
 
 function WatchedSummary({ watched }) {
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  const avgImdbRating = average(watched.map((movie) => movie.imdbRating || 0));
+  const avgUserRating = average(watched.map((movie) => movie.userRating || 0));
+  const avgRuntime = average(watched.map((movie) => movie.runtime || 0));
+  const totalRuntime = watched.reduce(
+    (total, movie) => total + (movie.runtime || 0),
+    0
+  );
+
   return (
     <div className="summary">
       <h2>Movies you watched</h2>
@@ -397,7 +418,7 @@ function WatchedSummary({ watched }) {
         </p>
         <p>
           <span>⏳</span>
-          <span>{avgRuntime} min</span>
+          <span>{avgRuntime.toFixed(2)} min</span>
         </p>
       </div>
     </div>
