@@ -248,6 +248,10 @@ function Movie({ movie, onSelectMovie }) {
 // }
 
 function MovieDetails({ selectedId, onCloseMovie }) {
+  //this Newly created component is fetching the Movie Details through API and modified the API with the "i"
+
+  const [movie, setMovie] = useState({});
+
   useEffect(
     function () {
       async function getMovieDetails() {
@@ -256,18 +260,55 @@ function MovieDetails({ selectedId, onCloseMovie }) {
         );
         const data = await res.json();
         console.log(data);
+        setMovie(data);
       }
       getMovieDetails();
     },
     [selectedId]
   );
-
+  const {
+    Poster: poster,
+    Title: title,
+    Year: year,
+    Rated: rated,
+    Released: released,
+    Runtime: runtime,
+    Genre: genre,
+    Director: director,
+    Writer: writer,
+    Actors: actors,
+    Plot: plot,
+    Language: language,
+    Country: country,
+    Awards: awards,
+    imdbRating,
+  } = movie;
   return (
     <div className="details">
-      <button className="btn-back" onClick={onCloseMovie}>
-        {" "}
-        &larr;{" "}
-      </button>
+      <header>
+        <button className="btn-back" onClick={onCloseMovie}>
+          {" "}
+          &larr;{" "}
+        </button>
+        <img src={poster} alt={`Poster of ${movie} `} />
+        <div className="details-overview">
+          <h2>{title}</h2>
+          <p>
+            {released} &bull; {runtime}
+          </p>
+          <p>{genre}</p>
+          <p>
+            <span>⭐</span> {imdbRating} IMDb rating
+          </p>
+        </div>
+      </header>
+      <section>
+        <p>
+          <em>{plot} </em>
+        </p>
+        <p>Starring {actors} </p>
+        <p>Directed by {director} </p>
+      </section>
       {selectedId}{" "}
     </div>
   );
