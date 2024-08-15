@@ -50,7 +50,8 @@ export default function StarRating({
           <Star
             key={i}
             onRate={() => handleRating(i + 1)}
-            full={tempRating ? tempRating >= i + 1 : rating >= i + 1} //this Logic affect the Hover effect
+            //Most imp Part :- this Logic affect the Hover effect in the Star
+            full={tempRating ? tempRating >= i + 1 : rating >= i + 1}
             onHoverIn={() => setTempRating(i + 1)}
             onHoverOut={() => setTempRating(0)}
             color={color}
