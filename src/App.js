@@ -125,6 +125,7 @@ export default function App() {
               selectedId={selectedId}
               onCloseMovie={handleCloseMovie}
               onAddWatched={handleAddWatched}
+              watched={watched}
             />
           ) : (
             <>
@@ -251,7 +252,7 @@ function Movie({ movie, onSelectMovie }) {
 //   );
 // }
 
-function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
+function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   //this will show the right part of the website
   //this Newly created component is fetching the Movie Details through API and modified the API with the "i"
 
@@ -259,6 +260,10 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
   const [isLoading, setISLoading] = useState(false);
   const [userRating, setUserRating] = useState(null);
 
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -266,7 +271,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
       year,
       poster,
       imdbRating: Number(imdbRating),
-      runtime: Number(runtime.split("").at(0)),
+      runtime,
       userRating,
     };
     onAddWatched(newWatchedMovie);
@@ -333,15 +338,23 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
           <section>
             <div className="rating">
               {" "}
-              <StarRating
-                maxRating={10}
-                size={24}
-                OnSetRating={setUserRating}
-              />
-              {userRating > 0 && (
-                <button className="btn-add" onClick={handleAdd}>
-                  +Add to list
-                </button>
+              {!isWatched ? (
+                <>
+                  <StarRating
+                    maxRating={10}
+                    size={24}
+                    OnSetRating={setUserRating}
+                  />
+                  {userRating > 0 && (
+                    <button className="btn-add" onClick={handleAdd}>
+                      +Add to list
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>
+                  You rated Movie {watchedUserRating} <span>⭐ </span>{" "}
+                </p>
               )}
             </div>
 
@@ -411,7 +424,7 @@ function WatchedMovie({ movie }) {
         </p>
         <p>
           <span>⏳</span>
-          <span>{movie.runtime} min</span>
+          <span>{movie.runtime}</span>
         </p>
       </div>
     </li>
