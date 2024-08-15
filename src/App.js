@@ -325,13 +325,16 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     imdbRating,
   } = movie;
 
-  useEffect(
-    function () {
-      if (!title) return;
-      document.title = `Movie | ${title}`;
-    },
-    [title]
-  );
+  useEffect(() => {
+    if (!title) return;
+    document.title = `Movie | ${title}`;
+
+    // Cleanup function to reset the document title when the component is unmounted
+    // or before the effect runs again due to a change in title
+    return function () {
+      document.title = "Popcorn";
+    };
+  }, [title]);
 
   return (
     <div className="details">
