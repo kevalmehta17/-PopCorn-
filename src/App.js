@@ -268,7 +268,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
-  )?.userRating;
+  )?.userRating; //Optional Chaining
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -358,7 +358,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
                 </>
               ) : (
                 <p>
-                  You rated Movie {watchedUserRating} <span>⭐ </span>{" "}
+                  You rated Movie {watchedUserRating} <span>⭐</span>{" "}
                 </p>
               )}
             </div>
@@ -389,11 +389,11 @@ function WatchedSummary({ watched }) {
         </p>
         <p>
           <span>⭐️</span>
-          <span>{avgImdbRating}</span>
+          <span>{avgImdbRating.toFixed(2)}</span>
         </p>
         <p>
           <span>🌟</span>
-          <span>{avgUserRating}</span>
+          <span>{avgUserRating.toFixed(2)}</span>
         </p>
         <p>
           <span>⏳</span>
