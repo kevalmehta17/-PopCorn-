@@ -68,6 +68,9 @@ export default function App() {
   function handleCloseMovie() {
     setSelectedId(null);
   }
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
 
   useEffect(
     function () {
@@ -121,6 +124,7 @@ export default function App() {
             <MovieDetails
               selectedId={selectedId}
               onCloseMovie={handleCloseMovie}
+              onAddWatched={handleAddWatched}
             />
           ) : (
             <>
@@ -247,12 +251,24 @@ function Movie({ movie, onSelectMovie }) {
 //   );
 // }
 
-function MovieDetails({ selectedId, onCloseMovie }) {
+function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
   //this will show the right part of the website
   //this Newly created component is fetching the Movie Details through API and modified the API with the "i"
 
   const [movie, setMovie] = useState({});
   const [isLoading, setISLoading] = useState(false);
+
+  function handleAdd() {
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split("").at(0)),
+    };
+    onAddWatched(newWatchedMovie);
+  }
 
   useEffect(
     function () {
@@ -315,6 +331,9 @@ function MovieDetails({ selectedId, onCloseMovie }) {
             <div className="rating">
               {" "}
               <StarRating maxRating={10} size={24} />
+              <button className="btn-add" onClick={handleAdd}>
+                +Add to list
+              </button>
             </div>
 
             <p>
@@ -323,7 +342,6 @@ function MovieDetails({ selectedId, onCloseMovie }) {
             <p>Starring {actors} </p>
             <p>Directed by {director} </p>
           </section>
-          {selectedId}{" "}
         </>
       )}
     </div>
@@ -371,8 +389,8 @@ function WatchedList({ watched }) {
 function WatchedMovie({ movie }) {
   return (
     <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
+      <img src={movie.poster} alt={`${movie.title} poster`} />
+      <h3>{movie.title}</h3>
       <div>
         <p>
           <span>⭐️</span>
