@@ -114,7 +114,11 @@ export default function App() {
         setError("");
         return;
       }
+
+      handleCloseMovie();
+
       fetchMovies();
+
       return function () {
         controller.abort();
       };
@@ -304,7 +308,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     const callback = (e) => {
       if (e.code === "Escape") {
         onCloseMovie();
-        console.log("Closing");
       }
     };
     document.addEventListener("keydown", callback);
