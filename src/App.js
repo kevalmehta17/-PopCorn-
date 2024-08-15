@@ -200,7 +200,7 @@ function Box({ children }) {
     </div>
   );
 }
-
+//this shows the Left Part
 function MovieList({ movies, onSelectMovie }) {
   return (
     <ul className="list list-movies">
@@ -248,6 +248,7 @@ function Movie({ movie, onSelectMovie }) {
 // }
 
 function MovieDetails({ selectedId, onCloseMovie }) {
+  //this will show the right part of the website
   //this Newly created component is fetching the Movie Details through API and modified the API with the "i"
 
   const [movie, setMovie] = useState({});
@@ -269,6 +270,7 @@ function MovieDetails({ selectedId, onCloseMovie }) {
     },
     [selectedId]
   );
+  //Destructing the Movie Detail
   const {
     Poster: poster,
     Title: title,
