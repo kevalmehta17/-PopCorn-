@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { set } from "zod";
+import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 // const tempMovieData = [
 //   {
@@ -59,19 +62,19 @@ const average = (arr) => {
 };
 
 const KEY = "62418533"; //My key for API and Data Fetching
-// const tempQuery = "Interstellar";
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setISLoading] = useState(false);
-  const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState("");
-  //const [watched, setWatched] = useState([]);
-  const [watched, setWatched] = useState(() => {
-    const storedValue = localStorage.getItem("watched");
-    return JSON.parse(storedValue);
-  });
+
+  //Custom Hook
+  const { movies, isLoading, error } = useMovies(query);
+
+  const [watched, setWatched] = useLocalStorageState([], "watched");
+  // const [watched, setWatched] = useState(() => {
+  //   const storedValue = localStorage.getItem("watched");
+  //   return JSON.parse(storedValue);
+  // });
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (selectedId === id ? null : id));
@@ -86,58 +89,13 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-  //After refereshing the page the watched movie not going to deleted so it stored in the Local Storage
-  //setItem(key,value);
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }, [watched]);
+  // //After refereshing the page the watched movie not going to deleted so it stored in the Local Storage
+  // //setItem(key,value);
+  // useEffect(() => {
+  //   localStorage.setItem("watched", JSON.stringify(watched));
+  // }, [watched]);
 
   //always declare Async fun inside function bcz useEffect doesnot accept Promises
-  useEffect(
-    function () {
-      const controller = new AbortController();
-      async function fetchMovies() {
-        try {
-          setISLoading(true);
-          setError("");
-          const res = await fetch(
-            `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`,
-            { signal: controller.signal }
-          );
-          if (!res.ok)
-            throw new Error("Something went wrong to fetch the Movie Data");
-          const data = await res.json();
-          if (data.Response === "False") throw new Error("Movie not Found");
-          setMovies(data.Search);
-          // console.log(data.Search);
-          setError("");
-        } catch (error) {
-          setError(error.message); // Set error message to state
-          console.error("Error fetching movies:", error); // Print error to console
-          if (error.name !== "AbortError") {
-            setError(error.message);
-          }
-        } finally {
-          //this help to remove rendering Loading, if the Error is available
-          setISLoading(false);
-        }
-      }
-      if (query.length < 3) {
-        setMovies([]);
-        setError("");
-        return;
-      }
-
-      handleCloseMovie();
-
-      fetchMovies();
-
-      return function () {
-        controller.abort();
-      };
-    },
-    [query]
-  );
 
   return (
     <>
@@ -216,21 +174,27 @@ function Numresults({ movies }) {
 function Search({ query, setQuery }) {
   const inputEl = useRef(null); // Creating a ref with an initial value of null
 
-  useEffect(() => {
-    const callback = (e) => {
-      if (document.activeElement === inputEl.current) return;
-      console.log(document.activeElement);
-      if (e.code === "Enter") {
-        inputEl.current.focus(); // Correct: Calling focus() on the DOM element, focusing the input
-        setQuery("");
-      }
-    };
+  useKey("Enter", () => {
+    if (document.activeElement === inputEl.current) return;
+    console.log(document.activeElement);
+    inputEl.current.focus(); // Correct: Calling focus() on the DOM element, focusing the input
+    setQuery("");
+  });
+  // useEffect(() => {
+  //   const callback = (e) => {
+  //     if (e.code === "Enter") {
+  //       if (document.activeElement === inputEl.current) return;
+  //       console.log(document.activeElement);
+  //       inputEl.current.focus(); // Correct: Calling focus() on the DOM element, focusing the input
+  //       setQuery("");
+  //     }
+  //   };
 
-    document.addEventListener("keydown", callback);
-    return () => {
-      document.removeEventListener("keydown", callback);
-    };
-  }, [setQuery]);
+  //   document.addEventListener("keydown", callback);
+  //   return () => {
+  //     document.removeEventListener("keydown", callback);
+  //   };
+  // }, [setQuery]);
   return (
     <input
       className="search"
@@ -343,19 +307,21 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie();
   }
   //the Following UseEffect hook help to remove movie Details through Escape key and here UseEffect is  used bcz of the dependency
-  useEffect(() => {
-    const callback = (e) => {
-      if (e.code === "Escape") {
-        onCloseMovie();
-      }
-    };
-    document.addEventListener("keydown", callback);
+  // Custom Hook
+  useKey("Escape", onCloseMovie);
+  // useEffect(() => {
+  //   const callback = (e) => {
+  //     if (e.code === "Escape") {
+  //       onCloseMovie();
+  //     }
+  //   };
+  //   document.addEventListener("keydown", callback);
 
-    //here the below is cleanup Function that remove the Event Listener from the React Dom and that is very helpfull for large Application ~ Senior Dev Code Tips
-    return () => {
-      document.removeEventListener("keydown", callback);
-    };
-  }, [onCloseMovie]);
+  //   //here the below is cleanup Function that remove the Event Listener from the React Dom and that is very helpfull for large Application ~ Senior Dev Code Tips
+  //   return () => {
+  //     document.removeEventListener("keydown", callback);
+  //   };
+  // }, [onCloseMovie]);
 
   //this following useEffect fill the movieDetails in Movie State
   useEffect(
