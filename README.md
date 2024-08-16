@@ -1,4 +1,4 @@
-## 🎬 usePopcorn
+## 🎬 Popcorn 🍿
 
 **Popcorn** is a React-based movie search application that allows users to:
 

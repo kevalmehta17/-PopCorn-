@@ -57,7 +57,7 @@ const average = (arr) => {
     : 0;
 };
 
-const KEY = "62418533";
+const KEY = "62418533"; //My key for API and Data Fetching
 // const tempQuery = "Interstellar";
 
 export default function App() {
@@ -80,7 +80,7 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
+  //always declare Async fun inside function bcz useEffect doesnot accept Promises
   useEffect(
     function () {
       const controller = new AbortController();
@@ -279,7 +279,7 @@ function Movie({ movie, onSelectMovie }) {
 
 function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   //this will show the right part of the website
-  //this Newly created component is fetching the Movie Details through API and modified the API with the "i"
+  //this Newly created component is fetching the Movie Details through API and modified the API with the "i" in useEffect
 
   const [movie, setMovie] = useState({});
   const [isLoading, setISLoading] = useState(false);
@@ -289,6 +289,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
   )?.userRating; //Optional Chaining
+
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -303,7 +304,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
-
+  //the Following UseEffect hook help to remove movie Details through Escape key and here UseEffect is  used bcz of the dependency
   useEffect(() => {
     const callback = (e) => {
       if (e.code === "Escape") {
@@ -312,11 +313,13 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     };
     document.addEventListener("keydown", callback);
 
+    //here the below is cleanup Function that remove the Event Listener from the React Dom and that is very helpfull for large Application ~ Senior Dev Code Tips
     return () => {
       document.removeEventListener("keydown", callback);
     };
   }, [onCloseMovie]);
 
+  //this following useEffect fill the movieDetails in Movie State
   useEffect(
     function () {
       async function getMovieDetails() {
@@ -325,7 +328,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
           `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
         );
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         setMovie(data);
         setISLoading(false);
       }
@@ -382,7 +385,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
               </p>
               <p>{genre}</p>
               <p>
-                <span>⭐</span> {imdbRating} IMDb rating
+                <span>⭐</span> {imdbRating} IMDb Rating
               </p>
             </div>
           </header>
