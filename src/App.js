@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
+import { set } from "zod";
 
 // const tempMovieData = [
 //   {
@@ -211,6 +212,23 @@ function Numresults({ movies }) {
 }
 
 function Search({ query, setQuery }) {
+  const inputEl = useRef(null); // Creating a ref with an initial value of null
+
+  useEffect(() => {
+    const callback = (e) => {
+      if (document.activeElement === inputEl.current) return;
+      console.log(document.activeElement);
+      if (e.code === "Enter") {
+        inputEl.current.focus(); // Correct: Calling focus() on the DOM element, focusing the input
+        setQuery("");
+      }
+    };
+
+    document.addEventListener("keydown", callback);
+    return () => {
+      document.removeEventListener("keydown", callback);
+    };
+  }, [setQuery]);
   return (
     <input
       className="search"
@@ -218,6 +236,7 @@ function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl} // Attaching the ref to the input element
     />
   );
 }
