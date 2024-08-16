@@ -87,6 +87,7 @@ export default function App() {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
   //After refereshing the page the watched movie not going to deleted so it stored in the Local Storage
+  //setItem(key,value);
   useEffect(() => {
     localStorage.setItem("watched", JSON.stringify(watched));
   }, [watched]);
@@ -108,6 +109,7 @@ export default function App() {
           const data = await res.json();
           if (data.Response === "False") throw new Error("Movie not Found");
           setMovies(data.Search);
+          // console.log(data.Search);
           setError("");
         } catch (error) {
           setError(error.message); // Set error message to state
@@ -314,6 +316,12 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [isLoading, setISLoading] = useState(false);
   const [userRating, setUserRating] = useState(null);
 
+  // const countRef = useRef(0);
+
+  // useEffect(() => {
+  //   if (userRating) countRef.current = countRef.current + 1;
+  // }, [userRating]);
+
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
@@ -328,6 +336,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       imdbRating: Number(imdbRating) || 0, // Default to 0
       runtime: runtime || 0, // Default to 0
       userRating: userRating || 0, // Default to 0
+      // countRatingDecision: countRef.current,
     };
 
     onAddWatched(newWatchedMovie);
